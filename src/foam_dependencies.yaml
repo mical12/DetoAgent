@@ -1,0 +1,34 @@
+# ==========================
+# OpenFOAM Artificial Dependency Rules
+# ==========================
+
+# --- 0/ 目录依赖 ---
+0_folder:
+  requires:
+    - system/blockMeshDict     # 初始场依赖网格定义
+  description: "初始场文件需要网格结构（由 blockMeshDict 定义）"
+
+# --- Allrun 脚本依赖 ---
+Allrun:
+  requires:
+    - system/decomposeParDict  # 并行分区设置
+  optional:
+    - system/controlDict       # 若调用 solver，需控制求解器类型
+  description: "Allrun 执行顺序依赖于并行和控制设置"
+
+# --- constant/thermophysicalProperties 依赖 ---
+constant/thermophysicalProperties:
+  requires:
+    - pattern: "constant/*chem*"
+      exclude:
+        - "constant/chemistryProperties"
+        - "constant/thermophysicalProperties"
+    - pattern: "constant/*therm*"
+      exclude:
+        - "constant/chemistryProperties"
+        - "constant/thermophysicalProperties"
+  description: "热物性文件依赖于包含 chem 或 therm 的机理文件，但排除控制文件"
+
+
+
+
